@@ -35,6 +35,7 @@ cd backend
 composer install
 cp .env.example .env
 php artisan key:generate
+php artisan jwt:secret
 ```
 
 > On Windows CMD, use `copy .env.example .env` instead.
@@ -94,7 +95,7 @@ php artisan serve
 cd frontend
 npm start
 ```
-> Runs on: http://localhost:5173
+> Runs on: http://localhost:3000
 
 ---
 
