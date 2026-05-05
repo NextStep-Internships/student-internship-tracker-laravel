@@ -6,9 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Rapport;
 use App\Models\Notification;
+use App\Models\DemandeEncadrement;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -209,6 +210,170 @@ class AuthController extends Controller
             'status' => 'success',
             'user'   => auth()->user(),
             'token'  => auth()->refresh(),
+        ]);
+    }
+
+    public function dashboardStats()
+    {
+        $user = auth()->user();
+        $role = $user->role;
+
+        // ─── ADMIN: sees everything ───
+        if ($role === 'ADMIN') {
+            $totalUsers = User::count();
+            $totalReports = Rapport::count();
+
+            $reportsByStatus = [
+                'soumis'       => Rapport::where('statut', 'soumis')->count(),
+                'en_revision'  => Rapport::where('statut', 'en_revision')->count(),
+                'accepte'      => Rapport::where('statut', 'accepte')->count(),
+                'refuse'       => Rapport::where('statut', 'refuse')->count(),
+            ];
+
+            $usersByRole = [
+                'admins'      => User::where('role', 'ADMIN')->count(),
+                'supervisors' => User::where('role', 'ENCADRANT')->count(),
+                'students'    => User::where('role', 'ETUDIANT')->count(),
+            ];
+
+            $recentReports = Rapport::with('auteur')
+                ->orderBy('date_depot', 'desc')
+                ->take(5)
+                ->get()
+                ->map(fn($r) => [
+                    'id'     => $r->id,
+                    'titre'  => $r->titre,
+                    'statut' => $r->statut,
+                    'auteur' => $r->auteur ? $r->auteur->nom : 'Unknown',
+                    'date'   => $r->date_depot,
+                ]);
+
+            $monthlySubmissions = [];
+            for ($i = 5; $i >= 0; $i--) {
+                $month = now()->subMonths($i);
+                $count = Rapport::whereMonth('date_depot', $month->month)
+                    ->whereYear('date_depot', $month->year)
+                    ->count();
+                $monthlySubmissions[] = ['month' => $month->format('M'), 'count' => $count];
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'stats'  => [
+                    'role'               => 'ADMIN',
+                    'total_users'        => $totalUsers,
+                    'total_reports'      => $totalReports,
+                    'reports_by_status'  => $reportsByStatus,
+                    'users_by_role'      => $usersByRole,
+                    'recent_reports'     => $recentReports,
+                    'monthly_submissions'=> $monthlySubmissions,
+                ],
+            ]);
+        }
+
+        // ─── SUPERVISOR: sees only their supervised students' reports ───
+        if ($role === 'ENCADRANT') {
+            $supervisedStudentIds = \DB::table('demandes_encadrement')
+                ->where('encadrant_id', $user->id)
+                ->where('statut', 'ACCEPTE')
+                ->pluck('etudiant_id');
+
+            $supervisedStudents = User::whereIn('id', $supervisedStudentIds)->get(['id', 'nom']);
+
+            $supervisedReports = Rapport::whereIn('auteur_id', $supervisedStudentIds);
+
+            $totalReports = $supervisedReports->count();
+            $reportsByStatus = [
+                'soumis'      => (clone $supervisedReports)->where('statut', 'soumis')->count(),
+                'en_revision' => (clone $supervisedReports)->where('statut', 'en_revision')->count(),
+                'accepte'     => (clone $supervisedReports)->where('statut', 'accepte')->count(),
+                'refuse'      => (clone $supervisedReports)->where('statut', 'refuse')->count(),
+            ];
+
+            $recentReports = $supervisedReports
+                ->with('auteur')
+                ->orderBy('date_depot', 'desc')
+                ->take(5)
+                ->get()
+                ->map(fn($r) => [
+                    'id'     => $r->id,
+                    'titre'  => $r->titre,
+                    'statut' => $r->statut,
+                    'auteur' => $r->auteur ? $r->auteur->nom : 'Unknown',
+                    'date'   => $r->date_depot,
+                ]);
+
+            $monthlySubmissions = [];
+            for ($i = 5; $i >= 0; $i--) {
+                $month = now()->subMonths($i);
+                $count = (clone $supervisedReports)
+                    ->whereMonth('date_depot', $month->month)
+                    ->whereYear('date_depot', $month->year)
+                    ->count();
+                $monthlySubmissions[] = ['month' => $month->format('M'), 'count' => $count];
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'stats'  => [
+                    'role'                => 'ENCADRANT',
+                    'total_reports'       => $totalReports,
+                    'total_students'      => $supervisedStudentIds->count(),
+                    'reports_by_status'   => $reportsByStatus,
+                    'supervised_students' => $supervisedStudents,
+                    'recent_reports'      => $recentReports,
+                    'monthly_submissions' => $monthlySubmissions,
+                ],
+            ]);
+        }
+
+        // ─── STUDENT: sees only their own reports ───
+        $myReports = Rapport::where('auteur_id', $user->id);
+
+        $totalReports = $myReports->count();
+        $reportsByStatus = [
+            'soumis'      => (clone $myReports)->where('statut', 'soumis')->count(),
+            'en_revision' => (clone $myReports)->where('statut', 'en_revision')->count(),
+            'accepte'     => (clone $myReports)->where('statut', 'accepte')->count(),
+            'refuse'      => (clone $myReports)->where('statut', 'refuse')->count(),
+        ];
+
+        $recentReports = $myReports
+            ->orderBy('date_depot', 'desc')
+            ->take(5)
+            ->get()
+            ->map(fn($r) => [
+                'id'     => $r->id,
+                'titre'  => $r->titre,
+                'statut' => $r->statut,
+                'auteur' => $user->nom,
+                'date'   => $r->date_depot,
+            ]);
+
+        $monthlySubmissions = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $month = now()->subMonths($i);
+            $count = (clone $myReports)
+                ->whereMonth('date_depot', $month->month)
+                ->whereYear('date_depot', $month->year)
+                ->count();
+            $monthlySubmissions[] = ['month' => $month->format('M'), 'count' => $count];
+        }
+
+        // Supervision status for student
+        $myRequest = DemandeEncadrement::where('etudiant_id', $user->id)->first();
+
+        return response()->json([
+            'status' => 'success',
+            'stats'  => [
+                'role'                => 'ETUDIANT',
+                'total_reports'       => $totalReports,
+                'reports_by_status'   => $reportsByStatus,
+                'recent_reports'       => $recentReports,
+                'monthly_submissions' => $monthlySubmissions,
+                'supervision_status'  => $myRequest ? $myRequest->statut : null,
+                'supervisor_id'       => $myRequest?->encadrant_id,
+            ],
         ]);
     }
 }

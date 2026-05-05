@@ -3,6 +3,8 @@ import Login from "./Login";
 import Register from "./Register";
 import Dashboard from "./Dashboard";
 import AdminUserManagement from "./AdminUserManagement";
+import SupervisionRequest from "./SupervisionRequest";
+import SupervisionRequests from "./SupervisionRequests";
 
 function AdminRoute({ children }) {
   const token = localStorage.getItem("token");
@@ -32,6 +34,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/supervision-request" element={<SupervisionRequest />} />
+        <Route path="/supervision-requests" element={<SupervisionRequests />} />
         <Route
           path="/admin/users"
           element={

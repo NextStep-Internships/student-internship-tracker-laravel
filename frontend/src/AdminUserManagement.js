@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 function AdminUserManagement() {
     const navigate = useNavigate();
+    const [currentUser, setCurrentUser] = useState(null);
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -24,8 +25,21 @@ function AdminUserManagement() {
     // Search filter
     const [search, setSearch] = useState("");
 
+    const getRoleLabel = (role) => {
+        switch (role) {
+            case "ETUDIANT": return "Student";
+            case "ENCADRANT": return "Supervisor";
+            case "ADMIN": return "Administrator";
+            default: return role;
+        }
+    };
+
     const fetchUsers = () => {
         setLoading(true);
+        const userData = localStorage.getItem("user");
+        if (userData) {
+            try { setCurrentUser(JSON.parse(userData)); } catch {}
+        }
         api.get("/auth/users")
             .then((res) => setUsers(res.data.users))
             .catch(() => setError("Failed to load users."))
@@ -140,17 +154,42 @@ function AdminUserManagement() {
                         <i className="bi bi-speedometer2"></i>
                         <span>Dashboard</span>
                     </a>
+                    <a href="#" className="aum-nav-item">
+                        <i className="bi bi-journal-text"></i>
+                        <span>Reports</span>
+                    </a>
+                    <a href="#" className="aum-nav-item">
+                        <i className="bi bi-folder2-open"></i>
+                        <span>Documents</span>
+                    </a>
+                    <a href="#" className="aum-nav-item">
+                        <i className="bi bi-calendar-event"></i>
+                        <span>Calendar</span>
+                    </a>
+                    <a href="#" className="aum-nav-item">
+                        <i className="bi bi-chat-dots"></i>
+                        <span>Messages</span>
+                    </a>
                     <a href="#" className="aum-nav-item active">
-                        <i className="bi bi-people"></i>
+                        <i className="bi bi-people-fill"></i>
                         <span>User Management</span>
                     </a>
                     <a href="#" className="aum-nav-item">
-                        <i className="bi bi-gear"></i>
-                        <span>Settings</span>
+                        <i className="bi bi-person-circle"></i>
+                        <span>Profile</span>
                     </a>
                 </nav>
 
                 <div className="aum-sidebar-footer">
+                    {currentUser && (
+                        <div className="aum-user-mini">
+                            <div className="aum-user-avatar">{currentUser.nom.charAt(0)}</div>
+                            <div className="aum-user-info">
+                                <strong>{currentUser.nom}</strong>
+                                <span>{getRoleLabel(currentUser.role)}</span>
+                            </div>
+                        </div>
+                    )}
                     <button className="aum-logout-btn" onClick={() => { localStorage.clear(); navigate("/login"); }}>
                         <i className="bi bi-box-arrow-right"></i>
                         <span>Logout</span>
