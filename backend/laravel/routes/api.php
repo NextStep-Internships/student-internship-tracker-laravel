@@ -29,4 +29,5 @@ Route::middleware('auth:api')->group(function () {
     // Commentaire routes
     Route::get('rapports/{rapport}/commentaires', [CommentaireController::class, 'index']);
     Route::post('rapports/{rapport}/commentaires', [CommentaireController::class, 'store']);
+    Route::delete('commentaires/{id}', [CommentaireController::class, 'destroy']);
 });
