@@ -13,6 +13,12 @@ Route::prefix('auth')->group(function () {
         Route::get('profile',  [AuthController::class, 'profile']);
         Route::post('logout',  [AuthController::class, 'logout']);
         Route::post('refresh', [AuthController::class, 'refresh']);
+
+        // Admin-only: user management
+        Route::get('users',     [AuthController::class, 'getUsers'])->middleware('admin');
+        Route::post('users',    [AuthController::class, 'createUser'])->middleware('admin');
+        Route::put('users/{id}', [AuthController::class, 'updateUser'])->middleware('admin');
+        Route::delete('users/{id}', [AuthController::class, 'deleteUser'])->middleware('admin');
     });
 });
 

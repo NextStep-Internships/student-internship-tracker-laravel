@@ -1,0 +1,388 @@
+import { useState, useEffect } from "react";
+import api from "./services/api";
+import { useNavigate } from "react-router-dom";
+
+function AdminUserManagement() {
+    const navigate = useNavigate();
+    const [users, setUsers] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
+
+    // Form state
+    const [nom, setNom] = useState("");
+    const [email, setEmail] = useState("");
+    const [mot_de_passe, setPassword] = useState("");
+    const [role, setRole] = useState("ETUDIANT");
+    const [formLoading, setFormLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+
+    // Inline edit state
+    const [editingId, setEditingId] = useState(null);
+    const [editRole, setEditRole] = useState("");
+
+    // Search filter
+    const [search, setSearch] = useState("");
+
+    const fetchUsers = () => {
+        setLoading(true);
+        api.get("/auth/users")
+            .then((res) => setUsers(res.data.users))
+            .catch(() => setError("Failed to load users."))
+            .finally(() => setLoading(false));
+    };
+
+    useEffect(() => {
+        fetchUsers();
+    }, []);
+
+    const handleCreateUser = async () => {
+        setError("");
+        setSuccess("");
+        setFormLoading(true);
+        try {
+            await api.post("/auth/users", { nom, email, mot_de_passe, role });
+            setSuccess("User created successfully!");
+            setNom("");
+            setEmail("");
+            setPassword("");
+            setRole("ETUDIANT");
+            fetchUsers();
+            setTimeout(() => setSuccess(""), 3000);
+        } catch (err) {
+            const msg = err.response?.data?.errors
+                ? Object.values(err.response.data.errors).flat()[0]
+                : err.response?.data?.message || "Failed to create user.";
+            setError(msg);
+            setTimeout(() => setError(""), 4000);
+        } finally {
+            setFormLoading(false);
+        }
+    };
+
+    const handleDeleteUser = async (id) => {
+        if (!window.confirm("Are you sure you want to delete this user?")) return;
+        try {
+            await api.delete(`/auth/users/${id}`);
+            setSuccess("User deleted successfully.");
+            fetchUsers();
+            setTimeout(() => setSuccess(""), 3000);
+        } catch (err) {
+            alert(err.response?.data?.message || "Failed to delete user.");
+        }
+    };
+
+    const startEdit = (user) => {
+        setEditingId(user.id);
+        setEditRole(user.role);
+    };
+
+    const cancelEdit = () => {
+        setEditingId(null);
+        setEditRole("");
+    };
+
+    const saveEdit = async (id) => {
+        try {
+            await api.put(`/auth/users/${id}`, { role: editRole });
+            setEditingId(null);
+            setSuccess("Role updated successfully.");
+            fetchUsers();
+            setTimeout(() => setSuccess(""), 3000);
+        } catch (err) {
+            alert(err.response?.data?.message || "Failed to update role.");
+        }
+    };
+
+    const getRoleStyle = (role) => {
+        switch (role) {
+            case "ADMIN": return { bg: "linear-gradient(135deg, #7c3aed, #5b21b6)", label: "Admin" };
+            case "ENCADRANT": return { bg: "linear-gradient(135deg, #2563eb, #1d4ed8)", label: "Supervisor" };
+            case "ETUDIANT": return { bg: "linear-gradient(135deg, #16a34a, #15803d)", label: "Student" };
+            default: return { bg: "#94a3b8", label: role };
+        }
+    };
+
+    const getAvatarStyle = (role) => {
+        switch (role) {
+            case "ADMIN": return { bg: "#f3e8ff", color: "#7c3aed" };
+            case "ENCADRANT": return { bg: "#dbeafe", color: "#2563eb" };
+            case "ETUDIANT": return { bg: "#dcfce7", color: "#16a34a" };
+            default: return { bg: "#f1f5f9", color: "#64748b" };
+        }
+    };
+
+    const adminCount = users.filter(u => u.role === "ADMIN").length;
+    const encadrantCount = users.filter(u => u.role === "ENCADRANT").length;
+    const studentCount = users.filter(u => u.role === "ETUDIANT").length;
+
+    const filteredUsers = users.filter(user =>
+        user.nom.toLowerCase().includes(search.toLowerCase()) ||
+        user.email.toLowerCase().includes(search.toLowerCase())
+    );
+
+    return (
+        <div className="aum-page">
+            {/* Sidebar */}
+            <aside className="aum-sidebar">
+                <div className="aum-sidebar-header">
+                    <div className="aum-logo">
+                        <i className="bi bi-mortarboard-fill"></i>
+                    </div>
+                    <div className="aum-brand-text">
+                        <span className="aum-brand-name">InternTrack</span>
+                        <span className="aum-brand-sub">Admin Panel</span>
+                    </div>
+                </div>
+
+                <nav className="aum-sidebar-nav">
+                    <a href="#" className="aum-nav-item" onClick={(e) => { e.preventDefault(); navigate("/dashboard"); }}>
+                        <i className="bi bi-speedometer2"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="#" className="aum-nav-item active">
+                        <i className="bi bi-people"></i>
+                        <span>User Management</span>
+                    </a>
+                    <a href="#" className="aum-nav-item">
+                        <i className="bi bi-gear"></i>
+                        <span>Settings</span>
+                    </a>
+                </nav>
+
+                <div className="aum-sidebar-footer">
+                    <button className="aum-logout-btn" onClick={() => { localStorage.clear(); navigate("/login"); }}>
+                        <i className="bi bi-box-arrow-right"></i>
+                        <span>Logout</span>
+                    </button>
+                </div>
+            </aside>
+
+            {/* Main Content */}
+            <div className="aum-main-wrapper">
+                {/* Top Bar */}
+                <header className="aum-topbar">
+                    <div className="aum-topbar-left">
+                        <h1 className="aum-page-title">User Management</h1>
+                        <p className="aum-page-sub">Manage roles and accounts across the platform</p>
+                    </div>
+                    <div className="aum-topbar-right">
+                        <div className="aum-topbar-search">
+                            <i className="bi bi-search"></i>
+                            <input
+                                type="text"
+                                placeholder="Search users..."
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                            />
+                        </div>
+                    </div>
+                </header>
+
+                {/* Content */}
+                <main className="aum-content">
+                    {/* Stats Row */}
+                    <div className="aum-stats-row">
+                        <div className="aum-stat-card aum-stat-total">
+                            <div className="aum-stat-icon"><i className="bi bi-people-fill"></i></div>
+                            <div className="aum-stat-info">
+                                <span className="aum-stat-label">Total Users</span>
+                                <h3 className="aum-stat-value">{users.length}</h3>
+                            </div>
+                        </div>
+                        <div className="aum-stat-card aum-stat-admin">
+                            <div className="aum-stat-icon"><i className="bi bi-shield-fill"></i></div>
+                            <div className="aum-stat-info">
+                                <span className="aum-stat-label">Admins</span>
+                                <h3 className="aum-stat-value">{adminCount}</h3>
+                            </div>
+                        </div>
+                        <div className="aum-stat-card aum-stat-supervisor">
+                            <div className="aum-stat-icon"><i className="bi bi-person-badge"></i></div>
+                            <div className="aum-stat-info">
+                                <span className="aum-stat-label">Supervisors</span>
+                                <h3 className="aum-stat-value">{encadrantCount}</h3>
+                            </div>
+                        </div>
+                        <div className="aum-stat-card aum-stat-student">
+                            <div className="aum-stat-icon"><i className="bi bi-mortarboard"></i></div>
+                            <div className="aum-stat-info">
+                                <span className="aum-stat-label">Students</span>
+                                <h3 className="aum-stat-value">{studentCount}</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Two column grid: form + table */}
+                    <div className="aum-grid">
+                        {/* Create User Form */}
+                        <div className="aum-card aum-form-card">
+                            <div className="aum-card-header">
+                                <h2><i className="bi bi-person-plus-fill"></i> Create New User</h2>
+                                <p>Add a new user account to the platform</p>
+                            </div>
+                            <div className="aum-card-body">
+                                {error && (
+                                    <div className="aum-alert aum-alert-error">
+                                        <i className="bi bi-exclamation-circle-fill"></i>
+                                        {error}
+                                    </div>
+                                )}
+                                {success && (
+                                    <div className="aum-alert aum-alert-success">
+                                        <i className="bi bi-check-circle-fill"></i>
+                                        {success}
+                                    </div>
+                                )}
+
+                                <div className="aum-form-group">
+                                    <label>Full Name</label>
+                                    <div className="aum-input-wrap">
+                                        <i className="bi bi-person"></i>
+                                        <input type="text" placeholder="e.g. Sarah Johnson" value={nom}
+                                            onChange={(e) => setNom(e.target.value)} />
+                                    </div>
+                                </div>
+
+                                <div className="aum-form-group">
+                                    <label>Email Address</label>
+                                    <div className="aum-input-wrap">
+                                        <i className="bi bi-envelope"></i>
+                                        <input type="email" placeholder="e.g. sarah@university.edu" value={email}
+                                            onChange={(e) => setEmail(e.target.value)} />
+                                    </div>
+                                </div>
+
+                                <div className="aum-form-group">
+                                    <label>Password</label>
+                                    <div className="aum-input-wrap">
+                                        <i className="bi bi-lock"></i>
+                                        <input type={showPassword ? "text" : "password"} placeholder="Min. 6 characters" value={mot_de_passe}
+                                            onChange={(e) => setPassword(e.target.value)} />
+                                        <button type="button" className="aum-pw-toggle" onClick={() => setShowPassword(!showPassword)}>
+                                            <i className={`bi bi-eye${showPassword ? "-slash" : ""}`}></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="aum-form-group">
+                                    <label>Role</label>
+                                    <div className="aum-input-wrap aum-select-wrap">
+                                        <i className="bi bi-shield-check"></i>
+                                        <select value={role} onChange={(e) => setRole(e.target.value)}>
+                                            <option value="ETUDIANT">Student</option>
+                                            <option value="ENCADRANT">Supervisor</option>
+                                            <option value="ADMIN">Administrator</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <button className="aum-btn aum-btn-create" onClick={handleCreateUser} disabled={formLoading}>
+                                    {formLoading ? (
+                                        <>
+                                            <span className="aum-spinner"></span>
+                                            Creating...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <i className="bi bi-check2-circle"></i>
+                                            Create User
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Users Table Card */}
+                        <div className="aum-card aum-table-card">
+                            <div className="aum-card-header">
+                                <h2><i className="bi bi-list-ul"></i> All Users</h2>
+                                <span className="aum-table-count">{filteredUsers.length} result{filteredUsers.length !== 1 ? "s" : ""}</span>
+                            </div>
+                            <div className="aum-card-body aum-card-body-table">
+                                {loading ? (
+                                    <div className="aum-loading">
+                                        <div className="aum-spinner-lg"></div>
+                                        <p>Loading users...</p>
+                                    </div>
+                                ) : filteredUsers.length === 0 ? (
+                                    <div className="aum-empty">
+                                        <i className="bi bi-inbox"></i>
+                                        <p>No users found</p>
+                                    </div>
+                                ) : (
+                                    <div className="aum-table-scroll">
+                                        <table className="aum-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>User</th>
+                                                    <th>Role</th>
+                                                    <th>Change Role</th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {filteredUsers.map((user) => {
+                                                    const roleStyle = getRoleStyle(user.role);
+                                                    const avatarStyle = getAvatarStyle(user.role);
+                                                    return (
+                                                        <tr key={user.id}>
+                                                            <td>
+                                                                <div className="aum-user-cell">
+                                                                    <div className="aum-user-avatar" style={{ background: avatarStyle.bg, color: avatarStyle.color }}>
+                                                                        {user.nom.charAt(0).toUpperCase()}
+                                                                    </div>
+                                                                    <div className="aum-user-info">
+                                                                        <span className="aum-user-name">{user.nom}</span>
+                                                                        <span className="aum-user-email">{user.email}</span>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <span className="aum-role-badge" style={{ background: roleStyle.bg }}>
+                                                                    {roleStyle.label}
+                                                                </span>
+                                                            </td>
+                                                            <td>
+                                                                {editingId === user.id ? (
+                                                                    <div className="aum-edit-row">
+                                                                        <select value={editRole} onChange={(e) => setEditRole(e.target.value)} className="aum-edit-select">
+                                                                            <option value="ETUDIANT">Student</option>
+                                                                            <option value="ENCADRANT">Supervisor</option>
+                                                                            <option value="ADMIN">Admin</option>
+                                                                        </select>
+                                                                        <button className="aum-btn-icon aum-btn-save" onClick={() => saveEdit(user.id)} title="Save">
+                                                                            <i className="bi bi-check2"></i>
+                                                                        </button>
+                                                                        <button className="aum-btn-icon aum-btn-cancel" onClick={cancelEdit} title="Cancel">
+                                                                            <i className="bi bi-x-lg"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                ) : (
+                                                                    <button className="aum-btn-icon aum-btn-edit" onClick={() => startEdit(user)} title="Edit role">
+                                                                        <i className="bi bi-pencil-square"></i>
+                                                                    </button>
+                                                                )}
+                                                            </td>
+                                                            <td>
+                                                                <button className="aum-btn-icon aum-btn-delete" onClick={() => handleDeleteUser(user.id)} title="Delete user">
+                                                                    <i className="bi bi-trash3"></i>
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    );
+                                                })}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    );
+}
+
+export default AdminUserManagement;

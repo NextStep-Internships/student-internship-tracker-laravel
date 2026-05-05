@@ -115,3 +115,27 @@ git push origin person2-reports
 - Each person works only in their own branch
 - Merge only after testing your module
 - Always pull latest `main` before creating a new branch
+
+
+
+## ------------------------------ important --------------------------------------------
+l'admin li bch nbdew bih bch najmou n3mlou login mlwwl
+
+- Email : admin@example.com
+- password : admin123
+
+3ana zede supervisor wehed w student wehed mlwl zede :
+
+- Email supervisor : supervisor@example.com
+- Password supervisor : supervisor123
+
+- Email student : student@example.com
+- Password student : student123
+
+Bch najamt nhothom mlwl fama file amalo laravel creation ismou DatabaseSeeder.php mawjoud fil student-internship-tracker-laravel\backend\laravel\database\seeders
+howa haja teb3a laravel tetsama laravel's seeder howa laccount admin deja mawjoud ama idha wejaht mochkla runi lcommande hedhy fil backend/laravel :
+- php artisan db:seed
+
+Or if you want to reset and re-seed:
+- php artisan migrate:fresh --seed
+

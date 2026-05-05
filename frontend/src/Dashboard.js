@@ -84,7 +84,7 @@ function Dashboard() {
             case "ADMIN":
                 return (
                     <div className="quick-actions-grid">
-                        <button className="qa-btn">
+                        <button className="qa-btn" onClick={() => navigate("/admin/users")}>
                             <div className="qa-icon"><i className="bi bi-people"></i></div>
                             <span>Manage Users</span>
                         </button>
