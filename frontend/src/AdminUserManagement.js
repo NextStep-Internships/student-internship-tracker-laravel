@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "./services/api";
 import { useNavigate } from "react-router-dom";
-import Sidebar from "./Sidebar";
 
 function AdminUserManagement() {
     const navigate = useNavigate();
@@ -137,19 +136,76 @@ function AdminUserManagement() {
     );
 
     return (
-        <div className="pro-dashboard">
+        <div className="aum-page">
             {/* Sidebar */}
-            <Sidebar activePage="admin-users" />
+            <aside className="aum-sidebar">
+                <div className="aum-sidebar-header">
+                    <div className="aum-logo">
+                        <i className="bi bi-mortarboard-fill"></i>
+                    </div>
+                    <div className="aum-brand-text">
+                        <span className="aum-brand-name">InternTrack</span>
+                        <span className="aum-brand-sub">Admin Panel</span>
+                    </div>
+                </div>
+
+                <nav className="aum-sidebar-nav">
+                    <a href="#" className="aum-nav-item" onClick={(e) => { e.preventDefault(); navigate("/dashboard"); }}>
+                        <i className="bi bi-speedometer2"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="#" className="aum-nav-item">
+                        <i className="bi bi-journal-text"></i>
+                        <span>Reports</span>
+                    </a>
+                    <a href="#" className="aum-nav-item">
+                        <i className="bi bi-folder2-open"></i>
+                        <span>Documents</span>
+                    </a>
+                    <a href="#" className="aum-nav-item">
+                        <i className="bi bi-calendar-event"></i>
+                        <span>Calendar</span>
+                    </a>
+                    <a href="#" className="aum-nav-item">
+                        <i className="bi bi-chat-dots"></i>
+                        <span>Messages</span>
+                    </a>
+                    <a href="#" className="aum-nav-item active">
+                        <i className="bi bi-people-fill"></i>
+                        <span>User Management</span>
+                    </a>
+                    <a href="#" className="aum-nav-item">
+                        <i className="bi bi-person-circle"></i>
+                        <span>Profile</span>
+                    </a>
+                </nav>
+
+                <div className="aum-sidebar-footer">
+                    {currentUser && (
+                        <div className="aum-user-mini">
+                            <div className="aum-user-avatar">{currentUser.nom.charAt(0)}</div>
+                            <div className="aum-user-info">
+                                <strong>{currentUser.nom}</strong>
+                                <span>{getRoleLabel(currentUser.role)}</span>
+                            </div>
+                        </div>
+                    )}
+                    <button className="aum-logout-btn" onClick={() => { localStorage.clear(); navigate("/login"); }}>
+                        <i className="bi bi-box-arrow-right"></i>
+                        <span>Logout</span>
+                    </button>
+                </div>
+            </aside>
 
             {/* Main Content */}
-            <div className="pro-main-wrapper">
+            <div className="aum-main-wrapper">
                 {/* Top Bar */}
-                <header className="pro-topbar">
-                    <div className="pro-topbar-left">
-                        <h1 className="pro-page-title">User Management</h1>
-                        <p className="pro-page-sub">Manage roles and accounts across the platform</p>
+                <header className="aum-topbar">
+                    <div className="aum-topbar-left">
+                        <h1 className="aum-page-title">User Management</h1>
+                        <p className="aum-page-sub">Manage roles and accounts across the platform</p>
                     </div>
-                    <div className="pro-topbar-right">
+                    <div className="aum-topbar-right">
                         <div className="aum-topbar-search">
                             <i className="bi bi-search"></i>
                             <input
@@ -163,7 +219,7 @@ function AdminUserManagement() {
                 </header>
 
                 {/* Content */}
-                <main className="pro-content">
+                <main className="aum-content">
                     {/* Stats Row */}
                     <div className="aum-stats-row">
                         <div className="aum-stat-card aum-stat-total">
