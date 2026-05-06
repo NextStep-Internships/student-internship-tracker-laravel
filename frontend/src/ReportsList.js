@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "./services/api";
+import Sidebar from "./Sidebar";
 
 function ReportsList() {
   const navigate = useNavigate();
@@ -156,51 +157,7 @@ function ReportsList() {
 
   return (
     <div className="pro-dashboard">
-      {/* Sidebar - Exact same structure as Dashboard */}
-      <aside className="pro-sidebar">
-        <div className="pro-sidebar-header">
-          <div className="pro-logo">
-            <i className="bi bi-mortarboard-fill"></i>
-          </div>
-          <div className="pro-brand-text">
-            <span className="pro-brand-name">InternTrack</span>
-            <span className="pro-brand-sub">Reports Module</span>
-          </div>
-        </div>
-
-        <nav className="pro-sidebar-nav">
-          <a href="#" onClick={(e) => {e.preventDefault(); navigate('/dashboard')}} className="pro-nav-item">
-            <i className="bi bi-speedometer2"></i>
-            <span>Dashboard</span>
-          </a>
-          <a href="#" onClick={(e) => e.preventDefault()} className="pro-nav-item active">
-            <i className="bi bi-journal-text"></i>
-            <span>Reports</span>
-          </a>
-          <a href="#" onClick={(e) => e.preventDefault()} className="pro-nav-item">
-            <i className="bi bi-folder2-open"></i>
-            <span>Documents</span>
-          </a>
-          <a href="#" onClick={(e) => e.preventDefault()} className="pro-nav-item">
-            <i className="bi bi-chat-dots"></i>
-            <span>Messages</span>
-          </a>
-        </nav>
-
-        <div className="pro-sidebar-footer">
-          <div className="pro-user-mini">
-            <div className="pro-user-avatar">{user.nom.charAt(0)}</div>
-            <div className="pro-user-info">
-              <strong>{user.nom}</strong>
-              <span>{getRoleLabel(user.role)}</span>
-            </div>
-          </div>
-          <button className="pro-logout-btn" onClick={handleLogout}>
-            <i className="bi bi-box-arrow-right"></i>
-            <span>Logout</span>
-          </button>
-        </div>
-      </aside>
+      <Sidebar activePage="reports" />
 
       {/* Main Wrapper */}
       <div className="pro-main-wrapper">
@@ -422,12 +379,24 @@ function ReportsList() {
                                 {/* Details Button */}
                                 <button 
                                   className="btn-details" 
-                                  title="View report details"
+                                  title="Quick view comments"
                                   onClick={() => openComments(report)}
                                 >
-                                  <i className="bi bi-eye-fill"></i>
-                                  <span>Details</span>
+                                  <i className="bi bi-chat-text-fill"></i>
+                                  <span>Comments</span>
                                 </button>
+                                
+                                {/* Full Report View for Supervisor/Admin */}
+                                {(user?.role === 'ENCADRANT' || user?.role === 'ADMIN') && (
+                                  <button 
+                                    className="btn-details" 
+                                    title="View full report and grade"
+                                    onClick={() => navigate(`/reports/${report.id}`)}
+                                  >
+                                    <i className="bi bi-eye-fill"></i>
+                                    <span>Consulter</span>
+                                  </button>
+                                )}
 
                                 {/* Student Actions */}
                                 {canEdit(report) && (

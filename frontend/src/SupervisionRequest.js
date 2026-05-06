@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "./services/api";
 import { useNavigate } from "react-router-dom";
+import Sidebar from "./Sidebar";
 
 function SupervisionRequest() {
     const navigate = useNavigate();
@@ -54,78 +55,23 @@ function SupervisionRequest() {
     };
 
     return (
-        <div className="aum-page">
-            <aside className="aum-sidebar">
-                <div className="aum-sidebar-header">
-                    <div className="aum-logo">
-                        <i className="bi bi-mortarboard-fill"></i>
-                    </div>
-                    <div className="aum-brand-text">
-                        <span className="aum-brand-name">InternTrack</span>
-                        <span className="aum-brand-sub">Student Panel</span>
-                    </div>
-                </div>
+        <div className="pro-dashboard">
+            <Sidebar activePage="supervision" />
 
-                <nav className="aum-sidebar-nav">
-                    <a href="#" className="aum-nav-item" onClick={(e) => { e.preventDefault(); navigate("/dashboard"); }}>
-                        <i className="bi bi-speedometer2"></i>
-                        <span>Dashboard</span>
-                    </a>
-                    <a href="#" className="aum-nav-item">
-                        <i className="bi bi-journal-text"></i>
-                        <span>Reports</span>
-                    </a>
-                    <a href="#" className="aum-nav-item">
-                        <i className="bi bi-folder2-open"></i>
-                        <span>Documents</span>
-                    </a>
-                    <a href="#" className="aum-nav-item">
-                        <i className="bi bi-calendar-event"></i>
-                        <span>Calendar</span>
-                    </a>
-                    <a href="#" className="aum-nav-item">
-                        <i className="bi bi-chat-dots"></i>
-                        <span>Messages</span>
-                    </a>
-                    <a href="#" className="aum-nav-item active">
-                        <i className="bi bi-person-plus-fill"></i>
-                        <span>Supervision Request</span>
-                    </a>
-                    <a href="#" className="aum-nav-item">
-                        <i className="bi bi-person-circle"></i>
-                        <span>Profile</span>
-                    </a>
-                </nav>
-
-                <div className="aum-sidebar-footer">
-                    {currentUser && (
-                        <div className="aum-user-mini">
-                            <div className="aum-user-avatar">{currentUser.nom.charAt(0)}</div>
-                            <div className="aum-user-info">
-                                <strong>{currentUser.nom}</strong>
-                                <span>{getRoleLabel(currentUser.role)}</span>
-                            </div>
-                        </div>
-                    )}
-                    <button className="aum-logout-btn" onClick={() => { localStorage.clear(); navigate("/login"); }}>
-                        <i className="bi bi-box-arrow-right"></i>
-                        <span>Logout</span>
-                    </button>
-                </div>
-            </aside>
-
-            <div className="aum-main-wrapper">
-                <header className="aum-topbar">
-                    <div className="aum-topbar-left">
-                        <h1 className="aum-page-title">Supervision Request</h1>
-                        <p className="aum-page-sub">Choose a supervisor to guide you during your internship</p>
+            <div className="pro-main-wrapper">
+                <header className="pro-topbar">
+                    <div className="pro-topbar-left">
+                        <h1 className="pro-page-title">Supervision Request</h1>
+                        <p className="pro-page-sub">Choose a supervisor to guide you during your internship</p>
                     </div>
-                    <button className="pro-topbar-btn" onClick={() => navigate("/dashboard")}>
-                        <i className="bi bi-arrow-left"></i>
-                    </button>
+                    <div className="pro-topbar-right">
+                        <button className="pro-topbar-btn" onClick={() => navigate("/dashboard")}>
+                            <i className="bi bi-arrow-left"></i>
+                        </button>
+                    </div>
                 </header>
 
-                <main className="aum-content">
+                <main className="pro-content">
                     <div className="sr-layout">
                         {/* Info Card */}
                         <div className="sr-info-card">

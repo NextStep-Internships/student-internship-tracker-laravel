@@ -19,6 +19,7 @@ class Rapport extends Model
         'statut',
         'auteur_id',
         'encadrant_id',
+        'grade',
     ];
 
     protected $casts = [

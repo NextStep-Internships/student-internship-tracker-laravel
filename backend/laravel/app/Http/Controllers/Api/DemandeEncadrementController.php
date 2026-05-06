@@ -182,6 +182,15 @@ class DemandeEncadrementController extends Controller
                 ->where('id', '!=', $demande->id)
                 ->whereIn('statut', ['EN_ATTENTE'])
                 ->update(['statut' => 'REFUSE', 'date_reponse' => now()]);
+
+            // Update the student's encadrant_id in the users table
+            User::where('id', $demande->etudiant_id)
+                ->update(['encadrant_id' => $user->id]);
+
+            // Backfill existing reports that have no encadrant assigned
+            \App\Models\Rapport::where('auteur_id', $demande->etudiant_id)
+                ->whereNull('encadrant_id')
+                ->update(['encadrant_id' => $user->id]);
         }
 
         return response()->json([

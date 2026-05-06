@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "./services/api";
 import { useNavigate } from "react-router-dom";
+import Sidebar from "./Sidebar";
 
 function Dashboard() {
     const navigate = useNavigate();
@@ -186,84 +187,7 @@ function Dashboard() {
     return (
         <div className="pro-dashboard">
             {/* Sidebar */}
-            <aside className="pro-sidebar">
-                <div className="pro-sidebar-header">
-                    <div className="pro-logo">
-                        <i className="bi bi-mortarboard-fill"></i>
-                    </div>
-                    <div className="pro-brand-text">
-                        <span className="pro-brand-name">InternTrack</span>
-                        <span className="pro-brand-sub">Academic Platform</span>
-                    </div>
-                </div>
-
-                <nav className="pro-sidebar-nav">
-                    <a 
-                        href="#dashboard" 
-                        className="pro-nav-item active"
-                        onClick={(e) => { e.preventDefault(); navigate("/dashboard"); }}
-                    >
-                        <i className="bi bi-speedometer2"></i>
-                        <span>Dashboard</span>
-                    </a>
-                    <a 
-                        href="#reports" 
-                        className="pro-nav-item"
-                        onClick={(e) => { e.preventDefault(); navigate("/reports"); }}
-                    >
-                        <i className="bi bi-journal-text"></i>
-                        <span>Reports</span>
-                    </a>
-                    <a href="#documents" className="pro-nav-item" onClick={(e) => e.preventDefault()}>
-                        <i className="bi bi-folder2-open"></i>
-                        <span>Documents</span>
-                    </a>
-                    <a href="#calendar" className="pro-nav-item" onClick={(e) => e.preventDefault()}>
-                        <i className="bi bi-calendar-event"></i>
-                        <span>Calendar</span>
-                    </a>
-                    <a href="#messages" className="pro-nav-item" onClick={(e) => e.preventDefault()}>
-                        <i className="bi bi-chat-dots"></i>
-                        <span>Messages</span>
-                    </a>
-                    {user.role === "ADMIN" && (
-                        <a href="#" className="pro-nav-item" onClick={(e) => { e.preventDefault(); navigate("/admin/users"); }}>
-                            <i className="bi bi-people-fill"></i>
-                            <span>Manage Users</span>
-                        </a>
-                    )}
-                    {user.role === "ETUDIANT" && (
-                        <a href="#" className="pro-nav-item" onClick={(e) => { e.preventDefault(); navigate("/supervision-request"); }}>
-                            <i className="bi bi-person-plus"></i>
-                            <span>Supervision</span>
-                        </a>
-                    )}
-                    {user.role === "ENCADRANT" && (
-                        <a href="#" className="pro-nav-item" onClick={(e) => { e.preventDefault(); navigate("/supervision-requests"); }}>
-                            <i className="bi bi-inbox-fill"></i>
-                            <span>Requests</span>
-                        </a>
-                    )}
-                    <a href="#profile" className="pro-nav-item" onClick={(e) => e.preventDefault()}>
-                        <i className="bi bi-person-circle"></i>
-                        <span>Profile</span>
-                    </a>
-                </nav>
-
-                <div className="pro-sidebar-footer">
-                    <div className="pro-user-mini">
-                        <div className="pro-user-avatar">{user.nom.charAt(0)}</div>
-                        <div className="pro-user-info">
-                            <strong>{user.nom}</strong>
-                            <span>{getRoleLabel(user.role)}</span>
-                        </div>
-                    </div>
-                    <button className="pro-logout-btn" onClick={handleLogout}>
-                        <i className="bi bi-box-arrow-right"></i>
-                        <span>Logout</span>
-                    </button>
-                </div>
-            </aside>
+            <Sidebar activePage="dashboard" />
 
             {/* Main Content */}
             <div className="pro-main-wrapper">
@@ -492,14 +416,14 @@ function Dashboard() {
                                                 <span>Accept or reject student applications</span>
                                             </div>
                                         </button>
-                                        <button className="qa-vertical-btn" onClick={() => navigate("/dashboard")}>
+                                        <button className="qa-vertical-btn" onClick={() => navigate("/validation")}>
                                             <i className="bi bi-eye-fill"></i>
                                             <div>
                                                 <strong>View Student Reports</strong>
                                                 <span>Check and validate submissions</span>
                                             </div>
                                         </button>
-                                        <button className="qa-vertical-btn" onClick={() => navigate("/dashboard")}>
+                                        <button className="qa-vertical-btn" onClick={() => navigate("/reports")}>
                                             <i className="bi bi-chat-left-text-fill"></i>
                                             <div>
                                                 <strong>Give Feedback</strong>

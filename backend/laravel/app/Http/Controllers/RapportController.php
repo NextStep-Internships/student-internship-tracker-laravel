@@ -35,10 +35,17 @@ class RapportController extends Controller
                     ->orderByDesc('date_depot')
                     ->get();
             }
-            // Supervisors and admins see rapports assigned to them
+            // Supervisors see reports from their assigned students
+            // Match by: rapport.encadrant_id OR the student's current encadrant_id in users table
             else if ($user->role === 'ENCADRANT') {
-                $rapports = Rapport::forEncadrant($user)
-                    ->with(['auteur', 'encadrant', 'commentaires.auteur'])
+                $studentIds = \App\Models\User::where('encadrant_id', $user->id)
+                    ->pluck('id');
+
+                $rapports = Rapport::with(['auteur', 'encadrant', 'commentaires.auteur'])
+                    ->where(function($q) use ($user, $studentIds) {
+                        $q->where('encadrant_id', $user->id)
+                          ->orWhereIn('auteur_id', $studentIds);
+                    })
                     ->orderByDesc('date_depot')
                     ->get();
             }
@@ -100,8 +107,8 @@ class RapportController extends Controller
                 'contenu' => $request->contenu,
                 'date_depot' => Carbon::now(),
                 'statut' => 'BROUILLON',
-                'auteur_id' => auth()->id(),
-                'encadrant_id' => null,
+                'auteur_id' => $user->id,
+                'encadrant_id' => $user->encadrant_id, // auto-assign the student's supervisor
             ]);
 
             $rapport->load(['auteur', 'encadrant', 'commentaires.auteur']);

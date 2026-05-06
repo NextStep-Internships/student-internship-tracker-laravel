@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "./services/api";
+import Sidebar from "./Sidebar";
 import "./ReportForm.css";
 
 function ReportForm() {
@@ -233,52 +234,7 @@ function ReportForm() {
 
   return (
     <div className="pro-dashboard">
-      {/* Sidebar */}
-      <aside className="pro-sidebar">
-        <div className="pro-sidebar-header">
-          <div className="pro-logo">
-            <i className="bi bi-mortarboard-fill"></i>
-          </div>
-          <div className="pro-brand-text">
-            <span className="pro-brand-name">InternTrack</span>
-            <span className="pro-brand-sub">Reports Module</span>
-          </div>
-        </div>
-
-        <nav className="pro-sidebar-nav">
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              navigate("/dashboard");
-            }}
-            className="pro-nav-item"
-          >
-            <i className="bi bi-speedometer2"></i>
-            <span>Dashboard</span>
-          </a>
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              navigate("/reports");
-            }}
-            className="pro-nav-item active"
-          >
-            <i className="bi bi-journal-text"></i>
-            <span>Reports</span>
-          </a>
-        </nav>
-
-        <div className="pro-sidebar-footer">
-          <div className="pro-user-mini">
-            <div className="pro-user-avatar">{user.nom.charAt(0)}</div>
-            <div className="pro-user-info">
-              <strong>{user.nom}</strong>
-            </div>
-          </div>
-        </div>
-      </aside>
+      <Sidebar activePage="reports" />
 
       {/* Main Wrapper */}
       <div className="pro-main-wrapper">
