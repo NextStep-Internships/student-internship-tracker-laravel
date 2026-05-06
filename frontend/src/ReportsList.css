@@ -1,0 +1,132 @@
+.reports-page {
+  padding: 30px;
+  max-width: 1200px;
+  margin: auto;
+  font-family: Arial, sans-serif;
+}
+
+.reports-page h1 {
+  margin-bottom: 20px;
+  color: #222;
+}
+
+.reports-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.reports-table th,
+.reports-table td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.reports-table th {
+  background-color: #f4f4f4;
+}
+
+.reports-table tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.btn {
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 6px;
+  color: white;
+  font-size: 14px;
+}
+
+.edit-btn {
+  background-color: #f0ad4e;
+}
+
+.delete-btn {
+  background-color: #d9534f;
+}
+
+.submit-btn {
+  background-color: #0275d8;
+}
+
+.validate-btn {
+  background-color: #5cb85c;
+}
+
+.reject-btn {
+  background-color: #c9302c;
+}
+
+.comment-btn {
+  background-color: #5bc0de;
+}
+
+.status {
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 13px;
+  color: white;
+  font-weight: bold;
+}
+
+.status.draft {
+  background-color: gray;
+}
+
+.status.submitted {
+  background-color: #0275d8;
+}
+
+.status.validated {
+  background-color: #5cb85c;
+}
+
+.status.rejected {
+  background-color: #d9534f;
+}
+
+.error {
+  color: red;
+  font-weight: bold;
+}
+.filter-tabs {
+    display: flex;
+    gap: 10px;
+}
+
+.filter-btn {
+    padding: 8px 20px;
+    border: 1px solid #dee2e6;
+    background: white;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.filter-btn.active {
+    background: #0d6efd;
+    color: white;
+    border-color: #0d6efd;
+}
+
+.pro-alert.success {
+    background: #d1e7dd;
+    color: #0f5132;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #badbcc;
+}
+
+.mb-20 { margin-bottom: 20px; }

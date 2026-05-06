@@ -42,7 +42,8 @@ function Dashboard() {
             case "ETUDIANT":
                 return (
                     <div className="quick-actions-grid">
-                        <button className="qa-btn">
+                        {/* Navigates to reports page */}
+                        <button className="qa-btn" onClick={() => navigate("/reports")}>
                             <div className="qa-icon"><i className="bi bi-journal-plus"></i></div>
                             <span>Submit Weekly Report</span>
                         </button>
@@ -63,7 +64,8 @@ function Dashboard() {
             case "ENCADRANT":
                 return (
                     <div className="quick-actions-grid">
-                        <button className="qa-btn">
+                        {/* Navigates to reports page */}
+                        <button className="qa-btn" onClick={() => navigate("/validation")}>
                             <div className="qa-icon"><i className="bi bi-eye"></i></div>
                             <span>Review Reports</span>
                         </button>
@@ -79,6 +81,7 @@ function Dashboard() {
                             <div className="qa-icon"><i className="bi bi-clipboard-data"></i></div>
                             <span>Generate Report</span>
                         </button>
+                        
                     </div>
                 );
             case "ADMIN":
@@ -156,27 +159,35 @@ function Dashboard() {
                 </div>
 
                 <nav className="pro-sidebar-nav">
-                    <a href="#" className="pro-nav-item active">
+                    <a 
+                        href="#dashboard" 
+                        className="pro-nav-item active"
+                        onClick={(e) => { e.preventDefault(); navigate("/dashboard"); }}
+                    >
                         <i className="bi bi-speedometer2"></i>
                         <span>Dashboard</span>
                     </a>
-                    <a href="#" className="pro-nav-item">
+                    <a 
+                        href="#reports" 
+                        className="pro-nav-item"
+                        onClick={(e) => { e.preventDefault(); navigate("/reports"); }}
+                    >
                         <i className="bi bi-journal-text"></i>
                         <span>Reports</span>
                     </a>
-                    <a href="#" className="pro-nav-item">
+                    <a href="#documents" className="pro-nav-item" onClick={(e) => e.preventDefault()}>
                         <i className="bi bi-folder2-open"></i>
                         <span>Documents</span>
                     </a>
-                    <a href="#" className="pro-nav-item">
+                    <a href="#calendar" className="pro-nav-item" onClick={(e) => e.preventDefault()}>
                         <i className="bi bi-calendar-event"></i>
                         <span>Calendar</span>
                     </a>
-                    <a href="#" className="pro-nav-item">
+                    <a href="#messages" className="pro-nav-item" onClick={(e) => e.preventDefault()}>
                         <i className="bi bi-chat-dots"></i>
                         <span>Messages</span>
                     </a>
-                    <a href="#" className="pro-nav-item">
+                    <a href="#profile" className="pro-nav-item" onClick={(e) => e.preventDefault()}>
                         <i className="bi bi-person-circle"></i>
                         <span>Profile</span>
                     </a>
@@ -226,7 +237,7 @@ function Dashboard() {
                                 {getRoleLabel(user.role)} Panel
                             </div>
                             <h2>Hello, <span className="pro-name-highlight">{user.nom}</span></h2>
-                            <p>Here's an overview of your academic internship activity. Stay on track with your weekly reports andsupervisor feedback.</p>
+                            <p>Here's an overview of your academic internship activity. Stay on track with your weekly reports and supervisor feedback.</p>
                         </div>
                         <div className="pro-welcome-graphic">
                             <div className="pro-circle-1"></div>
