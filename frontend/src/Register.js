@@ -8,7 +8,6 @@ function Register() {
     const [email, setEmail] = useState("");
     const [mot_de_passe, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-    const [role, setRole] = useState("ETUDIANT");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
@@ -20,9 +19,9 @@ function Register() {
                 nom,
                 email,
                 mot_de_passe,
-                role,
             });
             localStorage.setItem("token", response.data.token);
+            localStorage.setItem("user", JSON.stringify(response.data.user));
             navigate("/dashboard");
         } catch (error) {
             if (error.response?.data?.errors) {
@@ -147,22 +146,7 @@ function Register() {
                         </div>
                     </div>
 
-                    <div className="premium-form-group">
-                        <label>Role</label>
-                        <div className="premium-input-wrap">
-                            <i className="bi bi-shield-user"></i>
-                            <select
-                                className="premium-select"
-                                value={role}
-                                onChange={(e) => setRole(e.target.value)}
-                            >
-                                <option value="ETUDIANT">Student</option>
-                                <option value="ENCADRANT">Supervisor</option>
-                                <option value="ADMIN">Administrator</option>
-                            </select>
-                        </div>
-                    </div>
-
+                    
                     <button className="premium-btn" onClick={handleRegister} disabled={loading}>
                         {loading ? (
                             <>

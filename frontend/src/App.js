@@ -6,7 +6,29 @@ import ReportsList from "./ReportsList";
 import ReportForm from "./ReportForm";
 import RapportDetail from "./RapportDetail";
 import SuperviseurValidation from './SuperviseurValidation';
+import AdminUserManagement from "./AdminUserManagement";
+import SupervisionRequest from "./SupervisionRequest";
+import SupervisionRequests from "./SupervisionRequests";
 
+function AdminRoute({ children }) {
+  const token = localStorage.getItem("token");
+  const userData = localStorage.getItem("user");
+
+  if (!token || !userData) {
+    return <Navigate to="/login" replace />;
+  }
+
+  try {
+    const user = JSON.parse(userData);
+    if (user.role !== "ADMIN") {
+      return <Navigate to="/dashboard" replace />;
+    }
+  } catch {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+}
 
 function App() {
   return (
@@ -21,6 +43,16 @@ function App() {
         <Route path="/reports/edit/:id" element={<ReportForm />} />
         <Route path="/reports/:id" element={<RapportDetail />} />
         <Route path="/validation" element={<SuperviseurValidation />} />
+        <Route path="/supervision-request" element={<SupervisionRequest />} />
+        <Route path="/supervision-requests" element={<SupervisionRequests />} />
+        <Route
+          path="/admin/users"
+          element={
+            <AdminRoute>
+              <AdminUserManagement />
+            </AdminRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

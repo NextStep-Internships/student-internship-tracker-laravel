@@ -40,4 +40,19 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
+
+    public function rapports()
+    {
+        return $this->hasMany(Rapport::class, 'encadrant_id');
+    }
+
+    public function rapportsAsAuteur()
+    {
+        return $this->hasMany(Rapport::class, 'auteur_id');
+    }
+
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class, 'user_id');
+    }
 }
