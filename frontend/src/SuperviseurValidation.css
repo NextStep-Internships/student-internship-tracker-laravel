@@ -273,7 +273,7 @@
 .sv-grade-empty { color: #cbd5e1; font-size: 18px; }
 
 .sv-title-cell strong { display: block; color: #1e293b; font-weight: 600; }
-.sv-title-cell small { color: #94a3b8; font-size: 12px; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+.sv-title-cell small { color: #94a3b8; font-size: 12px; display: -webkit-box; -webkit-line-clamp: 1; line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
 
 .sv-author-cell {
     display: flex;

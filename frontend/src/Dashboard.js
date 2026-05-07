@@ -92,22 +92,10 @@ function Dashboard() {
                 );
             case "ADMIN":
                 return (
-                    <div className="quick-actions-grid">
-                        <button className="qa-btn">
+                    <div className="quick-actions-grid" style={{ gridTemplateColumns: 'repeat(1, 1fr)' }}>
+                        <button className="qa-btn" onClick={() => navigate("/admin/users")}>
                             <div className="qa-icon"><i className="bi bi-people"></i></div>
                             <span>Manage Users</span>
-                        </button>
-                        <button className="qa-btn">
-                            <div className="qa-icon"><i className="bi bi-gear"></i></div>
-                            <span>System Settings</span>
-                        </button>
-                        <button className="qa-btn">
-                            <div className="qa-icon"><i className="bi bi-bar-chart"></i></div>
-                            <span>Analytics</span>
-                        </button>
-                        <button className="qa-btn">
-                            <div className="qa-icon"><i className="bi bi-shield-check"></i></div>
-                            <span>Security</span>
                         </button>
                     </div>
                 );
@@ -118,20 +106,20 @@ function Dashboard() {
 
     const getStatutLabel = (statut) => {
         switch (statut) {
-            case "soumis": return "Submitted";
-            case "en_revision": return "In Review";
-            case "accepte": return "Accepted";
-            case "refuse": return "Rejected";
+            case "BROUILLON": return "Draft";
+            case "SOUMIS": return "Submitted";
+            case "VALIDE": return "Accepted";
+            case "REJETE": return "Rejected";
             default: return statut;
         }
     };
 
     const getStatutColor = (statut) => {
         switch (statut) {
-            case "soumis": return "#2563eb";
-            case "en_revision": return "#f59e0b";
-            case "accepte": return "#16a34a";
-            case "refuse": return "#dc2626";
+            case "BROUILLON": return "#94a3b8";
+            case "SOUMIS": return "#2563eb";
+            case "VALIDE": return "#16a34a";
+            case "REJETE": return "#dc2626";
             default: return "#94a3b8";
         }
     };
@@ -159,9 +147,9 @@ function Dashboard() {
         if (role === "ADMIN") {
             return [
                 { icon: "bi-people-fill", iconClass: "blue", label: "Total Users", value: stats?.total_users ?? "—" },
-                { icon: "bi-file-earmark-text-fill", iconClass: "green", label: "Total Reports", value: stats?.total_reports ?? "—" },
-                { icon: "bi-check-circle-fill", iconClass: "purple", label: "Accepted", value: stats?.reports_by_status?.accepte ?? 0 },
-                { icon: "bi-hourglass-split", iconClass: "orange", label: "Pending Review", value: ((stats?.reports_by_status?.soumis ?? 0) + (stats?.reports_by_status?.en_revision ?? 0)) },
+                { icon: "bi-shield-fill", iconClass: "purple", label: "Admins", value: stats?.users_by_role?.admins ?? 0 },
+                { icon: "bi-person-badge-fill", iconClass: "green", label: "Supervisors", value: stats?.users_by_role?.supervisors ?? 0 },
+                { icon: "bi-mortarboard-fill", iconClass: "orange", label: "Students", value: stats?.users_by_role?.students ?? 0 },
             ];
         }
         if (role === "ENCADRANT") {
@@ -253,7 +241,7 @@ function Dashboard() {
                                         <span className="pro-action-sub">Choose your supervisor</span>
                                     </div>
                                 </button>
-                                <button className="pro-action-btn pro-action-secondary" onClick={() => navigate("/submit-report")}>
+                                <button className="pro-action-btn pro-action-secondary" onClick={() => navigate("/reports/new")}>
                                     <i className="bi bi-file-earmark-plus"></i>
                                     <div className="pro-action-text">
                                         <span className="pro-action-title">Submit Report</span>
@@ -271,11 +259,21 @@ function Dashboard() {
                                 </div>
                             </button>
                         )}
+                        {role === "ADMIN" && (
+                            <button className="pro-action-btn pro-action-primary" onClick={() => navigate("/admin/users")}>
+                                <i className="bi bi-people-fill"></i>
+                                <div className="pro-action-text">
+                                    <span className="pro-action-title">Manage Users</span>
+                                    <span className="pro-action-sub">Manage accounts and roles</span>
+                                </div>
+                            </button>
+                        )}
                     </section>
 
                     {/* Charts Row */}
                     <div className="pro-content-grid pro-charts-grid">
-                        {/* Monthly Submissions Bar Chart — shared by all */}
+                        {/* Monthly Submissions Bar Chart */}
+                        {role !== "ADMIN" && (
                         <section className="pro-card pro-chart-card">
                             <div className="pro-card-header">
                                 <h3><i className="bi bi-bar-chart-fill"></i>
@@ -307,8 +305,10 @@ function Dashboard() {
                                 )}
                             </div>
                         </section>
+                        )}
 
-                        {/* Reports by Status Donut — shared by all */}
+                        {/* Reports by Status Donut */}
+                        {role !== "ADMIN" && (
                         <section className="pro-card pro-chart-card">
                             <div className="pro-card-header">
                                 <h3><i className="bi bi-pie-chart-fill"></i>Reports by Status</h3>
@@ -319,10 +319,10 @@ function Dashboard() {
                                         <div className="donut-chart"
                                             style={{
                                                 background: `conic-gradient(
-                                                    ${getStatutColor('soumis')} 0% ${(stats.reports_by_status.soumis / totalReports * 100).toFixed(1)}%,
-                                                    ${getStatutColor('en_revision')} ${(stats.reports_by_status.soumis / totalReports * 100).toFixed(1)}% ${((stats.reports_by_status.soumis + stats.reports_by_status.en_revision) / totalReports * 100).toFixed(1)}%,
-                                                    ${getStatutColor('accepte')} ${((stats.reports_by_status.soumis + stats.reports_by_status.en_revision) / totalReports * 100).toFixed(1)}% ${((stats.reports_by_status.soumis + stats.reports_by_status.en_revision + stats.reports_by_status.accepte) / totalReports * 100).toFixed(1)}%,
-                                                    ${getStatutColor('refuse')} ${((stats.reports_by_status.soumis + stats.reports_by_status.en_revision + stats.reports_by_status.accepte) / totalReports * 100).toFixed(1)}% 100%
+                                                    ${getStatutColor('BROUILLON')} 0% ${(stats.reports_by_status.BROUILLON / totalReports * 100).toFixed(1)}%,
+                                                    ${getStatutColor('SOUMIS')} ${(stats.reports_by_status.BROUILLON / totalReports * 100).toFixed(1)}% ${((stats.reports_by_status.BROUILLON + stats.reports_by_status.SOUMIS) / totalReports * 100).toFixed(1)}%,
+                                                    ${getStatutColor('VALIDE')} ${((stats.reports_by_status.BROUILLON + stats.reports_by_status.SOUMIS) / totalReports * 100).toFixed(1)}% ${((stats.reports_by_status.BROUILLON + stats.reports_by_status.SOUMIS + stats.reports_by_status.VALIDE) / totalReports * 100).toFixed(1)}%,
+                                                    ${getStatutColor('REJETE')} ${((stats.reports_by_status.BROUILLON + stats.reports_by_status.SOUMIS + stats.reports_by_status.VALIDE) / totalReports * 100).toFixed(1)}% 100%
                                                 )`
                                             }}
                                         >
@@ -349,6 +349,7 @@ function Dashboard() {
                                 )}
                             </div>
                         </section>
+                        )}
 
                         {/* Student: Supervision Status Card */}
                         {role === "ETUDIANT" && (
@@ -512,6 +513,7 @@ function Dashboard() {
                     </div>
 
                     {/* Recent Reports Table */}
+                    {role !== "ADMIN" && (
                     <section className="pro-card">
                         <div className="pro-card-header">
                             <h3>
@@ -564,6 +566,7 @@ function Dashboard() {
                             )}
                         </div>
                     </section>
+                    )}
                 </main>
             </div>
         </div>

@@ -133,7 +133,9 @@ class AuthController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'role' => 'required|in:ADMIN,ENCADRANT,ETUDIANT',
+            'nom'   => 'sometimes|required|string|max:255',
+            'email' => 'sometimes|required|email|unique:users,email,' . $id,
+            'role'  => 'sometimes|required|in:ADMIN,ENCADRANT,ETUDIANT',
         ]);
 
         if ($validator->fails()) {
@@ -143,7 +145,10 @@ class AuthController extends Controller
             ], 422);
         }
 
-        $user->role = $request->role;
+        if ($request->has('nom'))   $user->nom   = $request->nom;
+        if ($request->has('email')) $user->email = $request->email;
+        if ($request->has('role'))  $user->role  = $request->role;
+        
         $user->save();
 
         return response()->json([
@@ -224,10 +229,10 @@ class AuthController extends Controller
             $totalReports = Rapport::count();
 
             $reportsByStatus = [
-                'soumis'       => Rapport::where('statut', 'soumis')->count(),
-                'en_revision'  => Rapport::where('statut', 'en_revision')->count(),
-                'accepte'      => Rapport::where('statut', 'accepte')->count(),
-                'refuse'       => Rapport::where('statut', 'refuse')->count(),
+                'BROUILLON' => Rapport::where('statut', 'BROUILLON')->count(),
+                'SOUMIS'    => Rapport::where('statut', 'SOUMIS')->count(),
+                'VALIDE'    => Rapport::where('statut', 'VALIDE')->count(),
+                'REJETE'    => Rapport::where('statut', 'REJETE')->count(),
             ];
 
             $usersByRole = [
@@ -284,10 +289,10 @@ class AuthController extends Controller
 
             $totalReports = $supervisedReports->count();
             $reportsByStatus = [
-                'soumis'      => (clone $supervisedReports)->where('statut', 'soumis')->count(),
-                'en_revision' => (clone $supervisedReports)->where('statut', 'en_revision')->count(),
-                'accepte'     => (clone $supervisedReports)->where('statut', 'accepte')->count(),
-                'refuse'      => (clone $supervisedReports)->where('statut', 'refuse')->count(),
+                'BROUILLON' => (clone $supervisedReports)->where('statut', 'BROUILLON')->count(),
+                'SOUMIS'    => (clone $supervisedReports)->where('statut', 'SOUMIS')->count(),
+                'VALIDE'    => (clone $supervisedReports)->where('statut', 'VALIDE')->count(),
+                'REJETE'    => (clone $supervisedReports)->where('statut', 'REJETE')->count(),
             ];
 
             $recentReports = $supervisedReports
@@ -332,10 +337,10 @@ class AuthController extends Controller
 
         $totalReports = $myReports->count();
         $reportsByStatus = [
-            'soumis'      => (clone $myReports)->where('statut', 'soumis')->count(),
-            'en_revision' => (clone $myReports)->where('statut', 'en_revision')->count(),
-            'accepte'     => (clone $myReports)->where('statut', 'accepte')->count(),
-            'refuse'      => (clone $myReports)->where('statut', 'refuse')->count(),
+            'BROUILLON' => (clone $myReports)->where('statut', 'BROUILLON')->count(),
+            'SOUMIS'    => (clone $myReports)->where('statut', 'SOUMIS')->count(),
+            'VALIDE'    => (clone $myReports)->where('statut', 'VALIDE')->count(),
+            'REJETE'    => (clone $myReports)->where('statut', 'REJETE')->count(),
         ];
 
         $recentReports = $myReports

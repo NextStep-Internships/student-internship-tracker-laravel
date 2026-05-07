@@ -69,7 +69,10 @@ function Sidebar({ activePage = "" }) {
       {/* Navigation */}
       <nav className="pro-sidebar-nav">
         <NavItem to="/dashboard" icon="bi-speedometer2"    label="Dashboard"  page="dashboard" />
-        <NavItem to="/reports"   icon="bi-journal-text"    label="Reports"    page="reports"   />
+        {/* Not for ADMIN */}
+        {user.role !== "ADMIN" && (
+          <NavItem to="/reports"   icon="bi-journal-text"    label="Reports"    page="reports"   />
+        )}
 
         {/* Supervisor-only */}
         {user.role === "ENCADRANT" && (
@@ -89,16 +92,22 @@ function Sidebar({ activePage = "" }) {
           <NavItem to="/admin/users" icon="bi-people-fill" label="Manage Users" page="admin-users" />
         )}
 
-        {/* Common */}
-        <a href="#!" className="pro-nav-item" onClick={(e) => e.preventDefault()}>
-          <i className="bi bi-folder2-open"></i><span>Documents</span>
-        </a>
-        <a href="#!" className="pro-nav-item" onClick={(e) => e.preventDefault()}>
-          <i className="bi bi-calendar-event"></i><span>Calendar</span>
-        </a>
-        <a href="#!" className="pro-nav-item" onClick={(e) => e.preventDefault()}>
-          <i className="bi bi-chat-dots"></i><span>Messages</span>
-        </a>
+        {/* Common (except Admin) */}
+        {user.role !== "ADMIN" && (
+          <>
+            <a href="#!" className="pro-nav-item" onClick={(e) => e.preventDefault()}>
+              <i className="bi bi-folder2-open"></i><span>Documents</span>
+            </a>
+            <a href="#!" className="pro-nav-item" onClick={(e) => e.preventDefault()}>
+              <i className="bi bi-calendar-event"></i><span>Calendar</span>
+            </a>
+            <a href="#!" className="pro-nav-item" onClick={(e) => e.preventDefault()}>
+              <i className="bi bi-chat-dots"></i><span>Messages</span>
+            </a>
+          </>
+        )}
+        
+        {/* Profile (Everyone) */}
         <a href="#!" className="pro-nav-item" onClick={(e) => e.preventDefault()}>
           <i className="bi bi-person-circle"></i><span>Profile</span>
         </a>
