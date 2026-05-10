@@ -9,6 +9,10 @@ import SuperviseurValidation from './SuperviseurValidation';
 import AdminUserManagement from "./AdminUserManagement";
 import SupervisionRequest from "./SupervisionRequest";
 import SupervisionRequests from "./SupervisionRequests";
+import Documents from "./Documents";
+import Calendar from "./Calendar";
+import Messages from "./Messages";
+import Profile from "./Profile";
 
 function AdminRoute({ children }) {
   const token = localStorage.getItem("token");
@@ -45,6 +49,10 @@ function App() {
         <Route path="/validation" element={<SuperviseurValidation />} />
         <Route path="/supervision-request" element={<SupervisionRequest />} />
         <Route path="/supervision-requests" element={<SupervisionRequests />} />
+        <Route path="/documents" element={<Documents />} />
+        <Route path="/calendar" element={<Calendar />} />
+        <Route path="/messages" element={<Messages />} />
+        <Route path="/profile" element={<Profile />} />
         <Route
           path="/admin/users"
           element={

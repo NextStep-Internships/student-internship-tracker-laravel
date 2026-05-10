@@ -11,27 +11,24 @@ const getRoleLabel = (role) => {
   }
 };
 
-/**
- * Shared sidebar — identical to the Dashboard sidebar.
- * Pass `activePage` to highlight the correct nav item.
- * Possible values: "dashboard" | "reports" | "validation" |
- *                  "supervision" | "requests" | "admin-users"
- */
 function Sidebar({ activePage = "" }) {
   const navigate  = useNavigate();
   const location  = useLocation();
   const user      = JSON.parse(localStorage.getItem("user") || "{}");
 
-  // Auto-detect active page from route if not explicitly provided
   const path = location.pathname;
   const active = activePage ||
-    (path.startsWith("/dashboard")          ? "dashboard"   :
-     path.startsWith("/reports")            ? "reports"     :
-     path.startsWith("/validation")         ? "validation"  :
+    (path.startsWith("/dashboard")           ? "dashboard"   :
+     path.startsWith("/reports")             ? "reports"     :
+     path.startsWith("/validation")          ? "validation"  :
      path.startsWith("/supervision-request") && user.role === "ETUDIANT"
-                                             ? "supervision" :
-     path.startsWith("/supervision-request") ? "requests"   :
-     path.startsWith("/admin")              ? "admin-users" :
+                                              ? "supervision" :
+     path.startsWith("/supervision-requests") ? "requests"   :
+     path.startsWith("/admin")               ? "admin-users" :
+     path.startsWith("/documents")           ? "documents"   :
+     path.startsWith("/calendar")            ? "calendar"    :
+     path.startsWith("/messages")            ? "messages"    :
+     path.startsWith("/profile")             ? "profile"     :
      "");
 
   const handleLogout = () => {
@@ -69,9 +66,10 @@ function Sidebar({ activePage = "" }) {
       {/* Navigation */}
       <nav className="pro-sidebar-nav">
         <NavItem to="/dashboard" icon="bi-speedometer2"    label="Dashboard"  page="dashboard" />
+
         {/* Not for ADMIN */}
         {user.role !== "ADMIN" && (
-          <NavItem to="/reports"   icon="bi-journal-text"    label="Reports"    page="reports"   />
+          <NavItem to="/reports" icon="bi-journal-text" label="Reports" page="reports" />
         )}
 
         {/* Supervisor-only */}
@@ -95,22 +93,14 @@ function Sidebar({ activePage = "" }) {
         {/* Common (except Admin) */}
         {user.role !== "ADMIN" && (
           <>
-            <a href="#!" className="pro-nav-item" onClick={(e) => e.preventDefault()}>
-              <i className="bi bi-folder2-open"></i><span>Documents</span>
-            </a>
-            <a href="#!" className="pro-nav-item" onClick={(e) => e.preventDefault()}>
-              <i className="bi bi-calendar-event"></i><span>Calendar</span>
-            </a>
-            <a href="#!" className="pro-nav-item" onClick={(e) => e.preventDefault()}>
-              <i className="bi bi-chat-dots"></i><span>Messages</span>
-            </a>
+            <NavItem to="/documents" icon="bi-folder2-open"    label="Documents" page="documents" />
+            <NavItem to="/calendar"  icon="bi-calendar-event"  label="Calendar"  page="calendar"  />
+            <NavItem to="/messages"  icon="bi-chat-dots"        label="Messages"  page="messages"  />
           </>
         )}
-        
+
         {/* Profile (Everyone) */}
-        <a href="#!" className="pro-nav-item" onClick={(e) => e.preventDefault()}>
-          <i className="bi bi-person-circle"></i><span>Profile</span>
-        </a>
+        <NavItem to="/profile" icon="bi-person-circle" label="Profile" page="profile" />
       </nav>
 
       {/* Footer */}

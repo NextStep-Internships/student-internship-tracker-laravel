@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import api from "./services/api";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
+import Topbar from "./Topbar";
 
 function Dashboard() {
     const navigate = useNavigate();
@@ -180,21 +181,7 @@ function Dashboard() {
             {/* Main Content */}
             <div className="pro-main-wrapper">
                 {/* Top Bar */}
-                <header className="pro-topbar">
-                    <div className="pro-topbar-left">
-                        <h1 className="pro-page-title">Dashboard</h1>
-                        <p className="pro-page-sub">Welcome back — {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
-                    </div>
-                    <div className="pro-topbar-right">
-                        <button className="pro-topbar-btn">
-                            <i className="bi bi-bell"></i>
-                        </button>
-                        <button className="pro-topbar-btn">
-                            <i className="bi bi-gear"></i>
-                        </button>
-                        <div className="pro-topbar-avatar">{user.nom.charAt(0)}</div>
-                    </div>
-                </header>
+               <Topbar title="Dashboard" subtitle={`Welcome back — ${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`} />
 
                 {/* Dashboard Content */}
                 <main className="pro-content">
